@@ -2,5 +2,8 @@ package client;
 
 public class Client 
 {
- //dahdahdah
+	public Client()
+	{
+		System.out.print("Le client marche. Tuons-le!");
+	}
 }
