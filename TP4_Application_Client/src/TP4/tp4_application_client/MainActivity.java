@@ -15,7 +15,7 @@ public class MainActivity extends Activity {
 		    @Override
 		    public boolean onTouch(View v, MotionEvent event) {
 		      /* Réagir au toucher pour le bouton 3*/
-		        Intent userCreationIntent = new Intent(v.getContext(), SecondaryActivity.class);
+		        Intent userCreationIntent = new Intent(v.getContext(), ListActivity.class);
                 startActivityForResult(userCreationIntent, 0);
 				return true;
 		    }
