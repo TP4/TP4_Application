@@ -31,8 +31,8 @@ public class Client
 		this.liste = liste;
 		try
 		{
-			socket = new Socket("localhost", 50025);
-			
+			socket = new Socket("162.209.100.18", 50025);
+		
 			String message = this.read();
 			Document xmlDoc = this.createDocument(message);
 			
