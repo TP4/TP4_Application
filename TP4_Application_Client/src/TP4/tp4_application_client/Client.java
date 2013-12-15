@@ -21,48 +21,82 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-public class Client
+import android.net.Uri;
+import android.os.AsyncTask;
+import android.widget.Toast;
+
+public class Client extends AsyncTask<Void, Void, Void>
 {
 	private Socket socket;
 	private ListActivity liste;
 	
-	public Client(ListActivity liste)
-	{
-		this.liste = liste;
-		try
-		{
+    @Override
+    protected void onPostExecute(Void result) {
+        //Task you want to do on UIThread after completing Network operation
+        //onPostExecute is called after doInBackground finishes its task.
+   	try {
+			socket.close();
+			System.out.print("Connection closed");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+	}
+    }
+
+    @Override
+    protected Void doInBackground(Void... params) {
+       //Do your network operation here
+    	try {
 			socket = new Socket("162.209.100.18", 50025);
 		
-			String message = this.read();
-			Document xmlDoc = this.createDocument(message);
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+    }
+	
+//	public Client(ListActivity liste) throws UnknownHostException, IOException 
+//	{
+//		this.liste = liste;
+//		
+//		try
+//		{
+//			socket = new Socket("173.178.177.45", 50001);
+//			socket.close();
+//			String message = this.read();
+//			Document xmlDoc = this.createDocument(message);
+//			
+//			String serverMessage = this.reception();
+//			this.saveToFile(serverMessage);
+//			this.parseXML(xmlDoc);
+//			
 			
-			String serverMessage = this.reception();
-			this.saveToFile(serverMessage);
-			this.parseXML(xmlDoc);
-			
-			
-		}
-		catch (UnknownHostException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		catch (IOException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		catch (ParserConfigurationException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		catch (SAXException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+//		}
+//		catch (UnknownHostException e)
+//		{
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		catch (IOException e)
+//		{
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		catch (ParserConfigurationException e)
+//		{
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		catch (SAXException e)
+//		{
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//	}
 
 	private Document createDocument(String message) throws SAXException, IOException, ParserConfigurationException
 	{
