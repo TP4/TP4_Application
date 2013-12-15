@@ -15,13 +15,23 @@ import android.widget.TextView;
 public class ListActivity extends Activity{
 	
     List<ActivityToAdd> activities = new ArrayList<ActivityToAdd>();
-    List<String> activityNames = new ArrayList<String>();
+    public List<ActivityToAdd> getActivities() {
+		return activities;
+	}
+
+	public void setActivities(List<ActivityToAdd> activities) {
+		this.activities = activities;
+	}
+
+	List<String> activityNames = new ArrayList<String>();
 	
 	  ListView liste = null;
 	    
 	  @Override
 	  public void onCreate(Bundle savedInstanceState) {
+		 
 	    super.onCreate(savedInstanceState);
+	    Client newClient = new Client(this);
 	    setContentView(R.layout.activity2);
         
 	    liste = (ListView) findViewById(R.id.listView1);
