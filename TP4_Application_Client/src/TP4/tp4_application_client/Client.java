@@ -38,7 +38,7 @@ public class Client extends AsyncTask<Void, Void, Void>
 		return xmlDoc;
 	}
     
-    private String messageServer = null;
+    private String messageServer = "";
     public String getMessage() {
 		return messageServer;
 	}
@@ -63,17 +63,7 @@ public class Client extends AsyncTask<Void, Void, Void>
 			socket = new Socket("162.209.100.18", 50035);
 			this.messageServer = this.reception();
 			
-			try {
-				xmlDoc = this.createDocument(this.messageServer);
-			} catch (SAXException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (ParserConfigurationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-			String serverMessage = this.reception();
+	
 			
 			
 		} catch (UnknownHostException e) {

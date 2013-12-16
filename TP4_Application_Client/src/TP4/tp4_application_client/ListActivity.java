@@ -1,6 +1,7 @@
 package TP4.tp4_application_client;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -55,14 +56,28 @@ public class ListActivity extends Activity{
 //	    try {
 	    	this.client = new Client();
 	    	client.execute();
-	    	try {
-				this.saveToFile(this.client.getMessage());
+	    	
+					try {
+						this.saveToFile(this.client.getMessage());
+				
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+
+	    	
+			try {
+				this.parseXML();
+			} catch (ParserConfigurationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (SAXException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-	    	this.parseXML(this.client.getXmlDoc());
-			//this.parseXML();
 //		} catch (UnknownHostException e) {
 //			// TODO Auto-generated catch block
 //			e.printStackTrace();
@@ -120,40 +135,43 @@ public class ListActivity extends Activity{
 			return message;
 		}
 	 
-	 private void parseXML() throws SAXException, IOException, ParserConfigurationException
-		{
-			// Parse XML
-		 	DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder builder = factory.newDocumentBuilder();
-			Document xmlDoc = builder.parse(new InputSource(new StringReader(this.read())));
-			
-			xmlDoc.getDocumentElement().normalize();
-			NodeList activityNodeList = xmlDoc.getElementsByTagName("Activite");
-						
-						for (int activityPosition = 0; activityPosition < activityNodeList.getLength(); activityPosition++)
-						{
-							Node activityNode = activityNodeList.item(activityPosition);
-							if (activityNode.getNodeType() == Node.ELEMENT_NODE)
-							{
-								Element activityElement = (Element) activityNode;
-								ActivityToAdd activity = new ActivityToAdd(0,activityElement.getElementsByTagName("NOM_COUR").item(0).getTextContent());
-								this.activities.add(activity);
-							}
-						}
-			}
-		
+//	 private void parseXML() throws SAXException, IOException, ParserConfigurationException
+//		{
+//			// Parse XML
+//		 	DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+//			DocumentBuilder builder = factory.newDocumentBuilder();
+//			Document xmlDoc = builder.parse(new InputSource(new StringReader(this.read())));
+//			
+//			xmlDoc.getDocumentElement().normalize();
+//			NodeList activityNodeList = xmlDoc.getElementsByTagName("Activite");
+//						
+//						for (int activityPosition = 0; activityPosition < activityNodeList.getLength(); activityPosition++)
+//						{
+//							Node activityNode = activityNodeList.item(activityPosition);
+//							if (activityNode.getNodeType() == Node.ELEMENT_NODE)
+//							{
+//								Element activityElement = (Element) activityNode;
+//								ActivityToAdd activity = new ActivityToAdd(0,activityElement.getElementsByTagName("NOM_COUR").item(0).getTextContent());
+//								this.activities.add(activity);
+//							}
+//						}
+//			}
+//		
 private void saveToFile(String serverMessage) throws IOException
 {
 	
 	// Save to a file
 	System.out.print("Sauvegarde");
 	
+	
 	String filename = "XMLActivity.xml";
 	String string = serverMessage;
-	FileOutputStream outputStream;
+	FileOutputStream outputStream = null;
+	
+
 
 	try {
-	  outputStream = this.openFileOutput(serverMessage,  Context.MODE_PRIVATE);
+	  outputStream = this.openFileOutput(filename,  Context.MODE_PRIVATE);
 	  outputStream.write(string.getBytes());
 	  outputStream.close();
 	} catch (Exception e) {
@@ -162,9 +180,22 @@ private void saveToFile(String serverMessage) throws IOException
 
 }
 
-private void parseXML(Document xmlDoc)
+//private Document createDocument(String message) throws SAXException, IOException, ParserConfigurationException
+//{
+//	// Create a document
+//	DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+//	DocumentBuilder builder = factory.newDocumentBuilder();
+//	Document xmlDoc = builder.parse(new InputSource(new StringReader(message)));
+//	xmlDoc.getDocumentElement().normalize();
+//	return xmlDoc;
+//}
+
+private void parseXML() throws ParserConfigurationException, SAXException, IOException
 {
 	// Parse XML
+	DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+	DocumentBuilder builder = factory.newDocumentBuilder();
+	Document xmlDoc =  builder.parse(new File("XMLActivity.xml"));
 	NodeList activityNodeList = xmlDoc.getElementsByTagName("Activite");
 				
 				for (int activityPosition = 0; activityPosition < activityNodeList.getLength(); activityPosition++)
@@ -177,6 +208,6 @@ private void parseXML(Document xmlDoc)
 						this.activities.add(activity);
 					}
 				}
-	}
+}
 }
 
