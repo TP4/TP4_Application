@@ -21,16 +21,29 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.widget.Toast;
 
 public class Client extends AsyncTask<Void, Void, Void>
 {
-	private Socket socket;
-	private ListActivity liste;
-	
-    @Override
+	private Socket socket = null;
+	public Socket getSocket() {
+		return socket;
+	}
+
+	private Document xmlDoc = null;
+    public Document getXmlDoc() {
+		return xmlDoc;
+	}
+    
+    private String messageServer = null;
+    public String getMessage() {
+		return messageServer;
+	}
+
+	@Override
     protected void onPostExecute(Void result) {
         //Task you want to do on UIThread after completing Network operation
         //onPostExecute is called after doInBackground finishes its task.
@@ -47,8 +60,22 @@ public class Client extends AsyncTask<Void, Void, Void>
     protected Void doInBackground(Void... params) {
        //Do your network operation here
     	try {
-			socket = new Socket("162.209.100.18", 50025);
-		
+			socket = new Socket("162.209.100.18", 50035);
+			this.messageServer = this.reception();
+			
+			try {
+				xmlDoc = this.createDocument(this.messageServer);
+			} catch (SAXException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (ParserConfigurationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			String serverMessage = this.reception();
+			
+			
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -141,31 +168,4 @@ public class Client extends AsyncTask<Void, Void, Void>
 		
 	}
 	
-	private void saveToFile(String serverMessage) throws IOException
-	{
-		// Save to a file
-		System.out.print("Sauvegarde");
-		FileOutputStream outStream = new FileOutputStream("XMLActivity.xml");
-		OutputStreamWriter writerStream = new OutputStreamWriter(outStream);
-		writerStream.write(serverMessage);
-		writerStream.flush();
-		writerStream.close();
-	}
-	
-	private void parseXML(Document xmlDoc)
-	{
-		// Parse XML
-		NodeList activityNodeList = xmlDoc.getElementsByTagName("Activite");
-					
-					for (int activityPosition = 0; activityPosition < activityNodeList.getLength(); activityPosition++)
-					{
-						Node activityNode = activityNodeList.item(activityPosition);
-						if (activityNode.getNodeType() == Node.ELEMENT_NODE)
-						{
-							Element activityElement = (Element) activityNode;
-							ActivityToAdd activity = new ActivityToAdd(0,activityElement.getElementsByTagName("NOM_COUR").item(0).getTextContent());
-							liste.getActivities().add(activity);
-						}
-					}
-		}
-	}
+}

@@ -2,6 +2,7 @@ package TP4.tp4_application_client;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringReader;
@@ -21,6 +22,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -30,6 +32,8 @@ import android.widget.TextView;
 
 
 public class ListActivity extends Activity{
+	
+	Client client = null;
 	
     List<ActivityToAdd> activities = new ArrayList<ActivityToAdd>();
     public List<ActivityToAdd> getActivities() {
@@ -49,8 +53,15 @@ public class ListActivity extends Activity{
 		 
 	    super.onCreate(savedInstanceState);
 //	    try {
-	    	Client client = new Client();
+	    	this.client = new Client();
 	    	client.execute();
+	    	try {
+				this.saveToFile(this.client.getMessage());
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	    	this.parseXML(this.client.getXmlDoc());
 			//this.parseXML();
 //		} catch (UnknownHostException e) {
 //			// TODO Auto-generated catch block
@@ -130,4 +141,42 @@ public class ListActivity extends Activity{
 							}
 						}
 			}
-		}
+		
+private void saveToFile(String serverMessage) throws IOException
+{
+	
+	// Save to a file
+	System.out.print("Sauvegarde");
+	
+	String filename = "XMLActivity.xml";
+	String string = serverMessage;
+	FileOutputStream outputStream;
+
+	try {
+	  outputStream = this.openFileOutput(serverMessage,  Context.MODE_PRIVATE);
+	  outputStream.write(string.getBytes());
+	  outputStream.close();
+	} catch (Exception e) {
+	  e.printStackTrace();
+	}
+
+}
+
+private void parseXML(Document xmlDoc)
+{
+	// Parse XML
+	NodeList activityNodeList = xmlDoc.getElementsByTagName("Activite");
+				
+				for (int activityPosition = 0; activityPosition < activityNodeList.getLength(); activityPosition++)
+				{
+					Node activityNode = activityNodeList.item(activityPosition);
+					if (activityNode.getNodeType() == Node.ELEMENT_NODE)
+					{
+						Element activityElement = (Element) activityNode;
+						ActivityToAdd activity = new ActivityToAdd(0,activityElement.getElementsByTagName("NOM_COUR").item(0).getTextContent());
+						this.activities.add(activity);
+					}
+				}
+	}
+}
+
