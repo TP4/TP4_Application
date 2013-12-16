@@ -40,7 +40,7 @@ public class ListActivity extends Activity{
 	
 	Client client = null;
 	File fichierXML = null;
-	
+	Boolean allowed = true;
     List<ActivityToAdd> activities = new ArrayList<ActivityToAdd>();
     public List<ActivityToAdd> getActivities() {
 		return activities;
@@ -58,26 +58,12 @@ public class ListActivity extends Activity{
 	  public void onCreate(Bundle savedInstanceState) {
 		 
 	    super.onCreate(savedInstanceState);
-//	    try {
-	    	this.client = new Client();
+	    	this.client = new Client(this);
 	    	client.execute();
 	    	
-					try {
-						this.saveToFile(this.client.getMessage());
-				
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-
 	    	
 			
-					try {
-						this.read();
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+					
 			
 
 			
@@ -108,7 +94,7 @@ public class ListActivity extends Activity{
 		{
 			// Read the file
 			System.out.print("Read");
-			FileInputStream inStream = new FileInputStream(this.fichierXML);
+			FileInputStream inStream = new FileInputStream(new File("LOISIR_LIBRE.XML"));
 			InputStreamReader inputReader = new InputStreamReader(inStream);
 			BufferedReader reader = new BufferedReader(inputReader);
 			String message = "";
@@ -125,29 +111,35 @@ public class ListActivity extends Activity{
 			return message;
 		}
 	 
-//	 private void parseXML() throws SAXException, IOException, ParserConfigurationException
-//		{
-//			// Parse XML
-//		 	DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-//			DocumentBuilder builder = factory.newDocumentBuilder();
-//			Document xmlDoc = builder.parse(new InputSource(new StringReader(this.read())));
-//			
-//			xmlDoc.getDocumentElement().normalize();
-//			NodeList activityNodeList = xmlDoc.getElementsByTagName("Activite");
-//						
-//						for (int activityPosition = 0; activityPosition < activityNodeList.getLength(); activityPosition++)
-//						{
-//							Node activityNode = activityNodeList.item(activityPosition);
-//							if (activityNode.getNodeType() == Node.ELEMENT_NODE)
-//							{
-//								Element activityElement = (Element) activityNode;
-//								ActivityToAdd activity = new ActivityToAdd(0,activityElement.getElementsByTagName("NOM_COUR").item(0).getTextContent());
-//								this.activities.add(activity);
-//							}
-//						}
-//			}
-//		
-private void saveToFile(String serverMessage) throws IOException
+	 private void parseXML() throws SAXException, IOException, ParserConfigurationException, InterruptedException
+		{
+			// Parse XML
+		 	DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder builder = factory.newDocumentBuilder();
+			
+			Document xmlDoc = builder.parse(this.fichierXML);
+			
+			xmlDoc.getDocumentElement().normalize();
+			
+			ActivityToAdd activity = new ActivityToAdd(0,"Accessed");
+			this.activities.add(activity);
+			
+			NodeList activityNodeList = xmlDoc.getElementsByTagName("LOISIR_LIBRE");
+						
+						for (int activityPosition = 0; activityPosition < activityNodeList.getLength(); activityPosition++)
+						{
+							Node activityNode = activityNodeList.item(activityPosition);
+							if (activityNode.getNodeType() == Node.ELEMENT_NODE)
+							{
+								Element activityElement = (Element) activityNode;
+								 activity = new ActivityToAdd(0,activityElement.getElementsByTagName("NOM_COUR").item(0).getTextContent());
+								this.activities.add(activity);
+							}
+						}
+						
+			}
+		
+public void saveToFile(String serverMessage) throws IOException
 {
 	
 	// Save to a file
@@ -163,7 +155,10 @@ private void saveToFile(String serverMessage) throws IOException
 	this.fichierXML = file;
       FileOutputStream actXml = new FileOutputStream(file);
       actXml.write(string.getBytes());
+      this.allowed = true;
 	  actXml.close();
+		  
+	  this.parseXML();
 	  
 	} catch (Exception e) {
 	  e.printStackTrace();

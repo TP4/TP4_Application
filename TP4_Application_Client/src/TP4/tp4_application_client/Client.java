@@ -28,7 +28,14 @@ import android.widget.Toast;
 
 public class Client extends AsyncTask<Void, Void, Void>
 {
+	private ListActivity liste = null;
 	private Socket socket = null;
+	
+	public Client(ListActivity listActivity) {
+		this.liste = listActivity;
+	}
+
+
 	public Socket getSocket() {
 		return socket;
 	}
@@ -43,28 +50,13 @@ public class Client extends AsyncTask<Void, Void, Void>
 		return messageServer;
 	}
 
-	@Override
-    protected void onPostExecute(Void result) {
-        //Task you want to do on UIThread after completing Network operation
-        //onPostExecute is called after doInBackground finishes its task.
-   	try {
-			socket.close();
-			System.out.print("Connection closed");
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-	}
-    }
 
     @Override
     protected Void doInBackground(Void... params) {
        //Do your network operation here
     	try {
 			socket = new Socket("162.209.100.18", 50035);
-			this.messageServer = this.reception();
-			
-	
-			
+			this.messageServer = this.reception();		
 			
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block
@@ -74,6 +66,11 @@ public class Client extends AsyncTask<Void, Void, Void>
 			e.printStackTrace();
 		}
 		return null;
+    }
+    protected void onPostExecute() throws IOException{
+		socket.close();
+		System.out.print("Connection closed");
+		this.liste.saveToFile(this.messageServer);
     }
 	
 //	public Client(ListActivity liste) throws UnknownHostException, IOException 
@@ -115,37 +112,7 @@ public class Client extends AsyncTask<Void, Void, Void>
 //		}
 //	}
 
-	private Document createDocument(String message) throws SAXException, IOException, ParserConfigurationException
-	{
-		// Create a document
-		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder builder = factory.newDocumentBuilder();
-		Document xmlDoc = builder.parse(new InputSource(new StringReader(message)));
-		xmlDoc.getDocumentElement().normalize();
-		return xmlDoc;
-	}
-	
-	private String read() throws IOException
-	{
-		// Read the file
-		System.out.print("Read");
-		FileInputStream inStream = new FileInputStream("XMLActivity.xml");
-		InputStreamReader inputReader = new InputStreamReader(inStream);
-		BufferedReader reader = new BufferedReader(inputReader);
-		String message = "";
-		String lineRead = null;
-	
-	
-		while ((lineRead = reader.readLine()) != null)
-		{
-			message = message + lineRead;
-		}
-	
-		reader.close();
-		System.out.print(message);
-		return message;
-	}
-	
+
 	private String reception() throws IOException
 	{
 		// Reçoit
