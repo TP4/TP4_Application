@@ -39,6 +39,7 @@ import org.simpleframework.xml.*;
 public class ListActivity extends Activity{
 	
 	Client client = null;
+	File fichierXML = null;
 	
     List<ActivityToAdd> activities = new ArrayList<ActivityToAdd>();
     public List<ActivityToAdd> getActivities() {
@@ -70,33 +71,16 @@ public class ListActivity extends Activity{
 					}
 
 	    	
-				try {
-					this.parseXML();
-				} catch (ParserConfigurationException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (SAXException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+			
+					try {
+						this.read();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+			
 
 			
-//		} catch (UnknownHostException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (IOException e) {
-			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (SAXException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (ParserConfigurationException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
 	    setContentView(R.layout.activity2);
         
 	    liste = (ListView) findViewById(R.id.listView1);
@@ -124,7 +108,7 @@ public class ListActivity extends Activity{
 		{
 			// Read the file
 			System.out.print("Read");
-			FileInputStream inStream = new FileInputStream("LOISIR_LIBRE.XML");
+			FileInputStream inStream = new FileInputStream(this.fichierXML);
 			InputStreamReader inputReader = new InputStreamReader(inStream);
 			BufferedReader reader = new BufferedReader(inputReader);
 			String message = "";
@@ -172,19 +156,20 @@ private void saveToFile(String serverMessage) throws IOException
 	
 	String filename = "XMLActivity.xml";
 	String string = serverMessage;
-	
-	FileOutputStream outputStream = null;
-	
 
 
 	try {
-	  outputStream = this.openFileOutput(filename,  Context.MODE_PRIVATE);
-	  outputStream.write(string.getBytes());
-	  outputStream.close();
+	File file = new File(getFilesDir(), filename);
+	this.fichierXML = file;
+      FileOutputStream actXml = new FileOutputStream(file);
+      actXml.write(string.getBytes());
+	  actXml.close();
+	  
 	} catch (Exception e) {
 	  e.printStackTrace();
 	}
 
+}
 }
 
 //private Document createDocument(String message) throws SAXException, IOException, ParserConfigurationException
@@ -199,40 +184,40 @@ private void saveToFile(String serverMessage) throws IOException
 
 
 	
-	public void parseXML() throws ParserConfigurationException, SAXException, IOException {
-//		InputStream raw = getApplicationContext().getAssets().open("XMLActivity.xml");            
-//        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-//        DocumentBuilder dBuilder= dbFactory.newDocumentBuilder();
-//        Document doc = dBuilder.parse(raw);
+//	public void parseXML() throws ParserConfigurationException, SAXException, IOException {
+////		InputStream raw = getApplicationContext().getAssets().open("XMLActivity.xml");            
+////        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+////        DocumentBuilder dBuilder= dbFactory.newDocumentBuilder();
+////        Document doc = dBuilder.parse(raw);
+////
+////        doc.getDocumentElement().normalize();
 //
-//        doc.getDocumentElement().normalize();
-
-		FileInputStream inputStream = null;
-		
-
-
-		try {
-			inputStream = this.openFileInput("XMLActivity.xml");
-			inputStream.read();
-			
-			for (int activityPosition = 0; activityPosition < activityNodeList.getLength(); activityPosition++)
-				{
-					Node activityNode = activityNodeList.item(activityPosition);
-					if (activityNode.getNodeType() == Node.ELEMENT_NODE)
-					{
-						Element activityElement = (Element) activityNode;
-						ActivityToAdd activity = new ActivityToAdd(0,activityElement.getElementsByTagName("NOM_COUR").item(0).getTextContent());
-						this.activities.add(activity);
-					}
-				}
-			inputStream.close();
-		} catch (Exception e) {
-		  e.printStackTrace();
-		}
-		
-	 }
-
-}
+//		FileInputStream inputStream = null;
+//		
+//
+//
+//		try {
+//			inputStream = this.openFileInput("XMLActivity.xml");
+//			inputStream.read();
+//			
+//			for (int activityPosition = 0; activityPosition < activityNodeList.getLength(); activityPosition++)
+//				{
+//					Node activityNode = activityNodeList.item(activityPosition);
+//					if (activityNode.getNodeType() == Node.ELEMENT_NODE)
+//					{
+//						Element activityElement = (Element) activityNode;
+//						ActivityToAdd activity = new ActivityToAdd(0,activityElement.getElementsByTagName("NOM_COUR").item(0).getTextContent());
+//						this.activities.add(activity);
+//					}
+//				}
+//			inputStream.close();
+//		} catch (Exception e) {
+//		  e.printStackTrace();
+//		}
+//		
+//	 }
+//
+//}
 //	// Parse XML
 //	DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 //	DocumentBuilder builder = factory.newDocumentBuilder();
