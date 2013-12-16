@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.net.UnknownHostException;
@@ -21,6 +22,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import org.xmlpull.v1.XmlPullParser;
 
 import android.app.Activity;
 import android.content.Context;
@@ -30,6 +32,8 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import org.simpleframework.xml.*;
 
 
 public class ListActivity extends Activity{
@@ -66,18 +70,20 @@ public class ListActivity extends Activity{
 					}
 
 	    	
-			try {
-				this.parseXML();
-			} catch (ParserConfigurationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (SAXException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+				try {
+					this.parseXML();
+				} catch (ParserConfigurationException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (SAXException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+			
 //		} catch (UnknownHostException e) {
 //			// TODO Auto-generated catch block
 //			e.printStackTrace();
@@ -166,6 +172,7 @@ private void saveToFile(String serverMessage) throws IOException
 	
 	String filename = "XMLActivity.xml";
 	String string = serverMessage;
+	
 	FileOutputStream outputStream = null;
 	
 
@@ -190,15 +197,25 @@ private void saveToFile(String serverMessage) throws IOException
 //	return xmlDoc;
 //}
 
-private void parseXML() throws ParserConfigurationException, SAXException, IOException
-{
-	// Parse XML
-	DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-	DocumentBuilder builder = factory.newDocumentBuilder();
-	Document xmlDoc =  builder.parse(new File("XMLActivity.xml"));
-	NodeList activityNodeList = xmlDoc.getElementsByTagName("Activite");
-				
-				for (int activityPosition = 0; activityPosition < activityNodeList.getLength(); activityPosition++)
+
+	
+	public void parseXML() throws ParserConfigurationException, SAXException, IOException {
+//		InputStream raw = getApplicationContext().getAssets().open("XMLActivity.xml");            
+//        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+//        DocumentBuilder dBuilder= dbFactory.newDocumentBuilder();
+//        Document doc = dBuilder.parse(raw);
+//
+//        doc.getDocumentElement().normalize();
+
+		FileInputStream inputStream = null;
+		
+
+
+		try {
+			inputStream = this.openFileInput("XMLActivity.xml");
+			inputStream.read();
+			
+			for (int activityPosition = 0; activityPosition < activityNodeList.getLength(); activityPosition++)
 				{
 					Node activityNode = activityNodeList.item(activityPosition);
 					if (activityNode.getNodeType() == Node.ELEMENT_NODE)
@@ -208,6 +225,33 @@ private void parseXML() throws ParserConfigurationException, SAXException, IOExc
 						this.activities.add(activity);
 					}
 				}
+			inputStream.close();
+		} catch (Exception e) {
+		  e.printStackTrace();
+		}
+		
+	 }
+
 }
-}
+//	// Parse XML
+//	DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+//	DocumentBuilder builder = factory.newDocumentBuilder();
+//	Document xmlDoc =  builder.parse(new File("XMLActivity.xml"));
+//
+//	Serializer serializer = new Persister();
+//	File source = new File("XMLActivity.xml");
+//	Activity activity = serializer.read(Activity.class, source);
+//				
+//				for (int activityPosition = 0; activityPosition < activityNodeList.getLength(); activityPosition++)
+//				{
+//					Node activityNode = activityNodeList.item(activityPosition);
+//					if (activityNode.getNodeType() == Node.ELEMENT_NODE)
+//					{
+//						Element activityElement = (Element) activityNode;
+//						ActivityToAdd activity = new ActivityToAdd(0,activityElement.getElementsByTagName("NOM_COUR").item(0).getTextContent());
+//						this.activities.add(activity);
+//					}
+//				}
+//}
+
 
